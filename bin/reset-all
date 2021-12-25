@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+APP_ROOT="$(git rev-parse --show-toplevel)"
+
+source $APP_ROOT/docker/scripts/export-envs.sh
+
+cp -n $APP_ROOT/.env.example $APP_ROOT/.env
+
+export $(cat "$APP_ROOT/.env" | grep -v "#" | xargs)
+
+export NOTES_ENV=local
+
+docker-compose down --volumes --rmi=all
+docker-compose build --no-cache --parallel
+
+$APP_ROOT/bin/up

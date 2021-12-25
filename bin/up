@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+APP_ROOT="$(git rev-parse --show-toplevel)"
+
+cp -n $APP_ROOT/.env.example $APP_ROOT/.env
+
+source $APP_ROOT/docker/scripts/export-envs.sh
+
+docker-compose stop $1
+
+export NOTES_ENV=local
+
+docker-compose up -d --build --force-recreate --remove-orphans $1
+
+docker-compose exec -T app cp .env.example .env
+
+# Can take a while the first time.
+echo "running composer install..."
+docker-compose exec -T app composer install
+
+docker-compose exec -T app php artisan key:generate
