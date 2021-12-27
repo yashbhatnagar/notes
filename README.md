@@ -6,3 +6,4 @@
 ## Running notes in docker locally
 - run bin/up
 - run bin/reset-all if application gets stuck or wouldn't load. (Caution! it will bring down all the containers and re-build.)
+- App will be served on http://localhost:8100

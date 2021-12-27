@@ -12,10 +12,6 @@ export NOTES_ENV=local
 
 docker-compose up -d --build --force-recreate --remove-orphans $1
 
-docker-compose exec -T app cp .env.example .env
-
-# Can take a while the first time.
-echo "running composer install..."
-docker-compose exec -T app composer install
-
-docker-compose exec -T app php artisan key:generate
+docker-compose exec api php artisan config:cache
+docker-compose exec api php artisan migrate
+docker-compose exec api php artisan db:seed
