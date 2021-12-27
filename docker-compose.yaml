@@ -25,7 +25,8 @@ services:
     tty: true
     working_dir: /var/www
     volumes:
-      - ./src:/var/www
+      - ./app:/var/www/app
+      - ./public:/var/www/public
     depends_on:
       - nginx
     networks:
@@ -51,17 +52,51 @@ services:
     networks:
       - notes
 
-
   nginx:
     image: nginx:1.19.8-alpine
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
     container_name: nginx
     restart: unless-stopped
     tty: true
     ports:
       - 8100:80
     volumes:
-      - ./src:/var/www
-      - ./docker/nginx/conf:/etc/nginx/conf.d
+      - ./public:/var/www/public/app:ro
+      - ./notes-api/public:/var/www/public/api:ro
+    networks:
+      - notes
+
+  api:
+    image: api
+    build:
+      context: ./notes-api
+      dockerfile: Dockerfile
+    ports:
+      - 9000:9003
+    working_dir: /var/www
+    volumes:
+      - ./notes-api/app:/var/www/app
+      - ./notes-api/database:/var/www/database
+      - ./notes-api/routes:/var/www/routes
+      - ./notes-api/storage:/var/www/storage
+      #.env can be populated using AWS encrypted keys on build, rather than keeping in VCS.
+      # Hack for assessment demo purpose. Can either change notes-api/config/database.php as well.
+      - ./notes-api/.env.example:/var/www/.env
+    depends_on:
+      - nginx
+    environment:
+      APP_ENV: local
+      NOTES_ENV: $NOTES_ENV
+      DEBUG: 1
+      NO_CACHE: 1
+      BASE_URL: /
+      DB_HOST: ${DB_HOST:-db}
+      DB_NAME: ${DB_DATABASE:-notes_dev}
+      DB_USER: $DB_USERNAME
+      DB_PASS: $DB_PASSWORD
+      DB_PORT: $DB_PORT
     networks:
       - notes
 
