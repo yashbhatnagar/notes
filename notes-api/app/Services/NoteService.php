@@ -14,7 +14,7 @@ class NoteService implements INoteService
     {
         return Note::query()->find($id);
     }
-    // Not being used currently.
+
     public function listNotesByUser($userId): Collection|null
     {
         return Note::whereUserId($userId)->get();

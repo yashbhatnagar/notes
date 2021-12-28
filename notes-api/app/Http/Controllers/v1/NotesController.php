@@ -26,9 +26,8 @@ class NotesController extends Controller
      */
     public function index()
     {
-        //TODO: authorize
         $userId = Auth::user()->id;
-        $notes = $this->noteService->listNotes($userId);
+        return $this->noteService->listNotesByUser($userId);
     }
 
     /**
@@ -39,7 +38,6 @@ class NotesController extends Controller
      */
     public function store(Request $request)
     {
-        //TODO: authorize
         $userId = Auth::user()->id;
 
         $request->validate([
@@ -61,6 +59,7 @@ class NotesController extends Controller
      */
     public function show($id)
     {
+        //TODO: authorize
         $note = $this->noteService->getNote($id);
         if(is_null($note))
         {
@@ -123,7 +122,6 @@ class NotesController extends Controller
      */
     public function search($title)
     {
-        //TODO: authorize
         return $this->noteService->searchNote($title);
     }
 }
