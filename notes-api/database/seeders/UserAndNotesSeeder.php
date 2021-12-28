@@ -18,21 +18,21 @@ class UserAndNotesSeeder extends Seeder
     {
         $faker = Factory::create();
 
-        $user = User::firstOrCreate(
+        $user = User::updateOrCreate(
             ['email' => 'john@doe.com'],
             [
                 'name' => 'John Doe',
                 'email' => 'john@doe.com',
-                'password' => '1234'
+                'password' => bcrypt('1234')
             ]
         );
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'john@doe2.com'],
             [
                 'name' => 'John Doe 2',
                 'email' => 'john@doe2.com',
-                'password' => '1234'
+                'password' => bcrypt('1234')
             ]
         );
 
